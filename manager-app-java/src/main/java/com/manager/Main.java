@@ -1,4 +1,4 @@
-package sql;
+package com.manager;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -10,14 +10,14 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import org.sqlite.SQLiteConfig;
 
-
-public class testsql{
+public class Main {
     private static Path schema = Path.of("sql", "schema.sql");
     private static Path seed = Path.of("sql", "seed.sql");
     private static Path queries = Path.of("sql", "validation", "test.sql");
 
     public static void main(String[] args){
-        try (Connection conn = testsql.connect()) {
+        
+        try (Connection conn = Main.connect()) {
             Statement stmt = conn.createStatement();
 
             // Read the entire file content into a String

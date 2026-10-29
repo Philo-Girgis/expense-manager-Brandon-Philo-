@@ -1,13 +1,25 @@
 # employee_app/db.py
 import os
+import sys
 import sqlite3
 from contextlib import contextmanager
 from tabulate import tabulate
+from pathlib import Path
 
-HERE = os.path.dirname(os.path.abspath(__file__))
-SCHEMA = os.path.join(HERE, "schema.sql")
-SEED = os.path.join(HERE, "seed.sql")
-TEST = os.path.join(HERE, "validation", "test.sql")
+def getRoot():
+    # Get the absolute path of the current file or current working directory
+    # Use Path(__file__).resolve() if running from a script file
+    current_path = Path(__file__).resolve()
+    temp = False
+    
+    # Loop through all parent directories upward
+    for parent in current_path.parents:
+        if temp:
+            return parent
+        if parent.name.lower() == "employee-app-python".lower():
+            temp = True
+            
+    return temp
 
 @contextmanager
 def get_connection():
@@ -24,7 +36,14 @@ def get_connection():
         conn.close()
 
 if __name__ == "__main__":
-    
+    HERE = getRoot()
+    if not HERE:
+        print("cannot find root")
+        sys.exit(1)
+
+    SCHEMA = os.path.join(HERE, "sql", "schema.sql")
+    SEED = os.path.join(HERE, "sql", "seed.sql")
+    TEST = os.path.join(HERE, "sql", "validation", "test.sql")
     with get_connection() as conn:
         with open(SCHEMA, encoding="utf-8") as f:
             conn.executescript(f.read())
