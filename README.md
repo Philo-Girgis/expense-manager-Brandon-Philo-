@@ -1,5 +1,9 @@
 # expense-manager-Brandon-Philo-
 
-pip install tabulate to print tables
+for python (inside employee-app-python):
+- python -m venv .venv
+- python -m pip install -r requirements.txt
 
-add to vs code: java from oracle and java extension pack from microsoft
+for java:
+- java from oracle (vscode extension)
+- java extension pack from microsoft (vscode extension)
