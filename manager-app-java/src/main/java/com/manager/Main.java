@@ -52,6 +52,7 @@ public class Main {
                 }else{
                     failed = 0;
                     System.out.println("Welcome, "+row.getString("full_name"));
+                    Menu.menu(stmt, scanner, row);
                 }
 
                 if(failed == 3){
