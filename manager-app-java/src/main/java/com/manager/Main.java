@@ -65,5 +65,6 @@ public class Main {
             System.err.println("Error executing SQL script: " + e.getMessage());
             e.printStackTrace();
         }
+        scanner.close();
     }
 }
