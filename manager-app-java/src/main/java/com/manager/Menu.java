@@ -3,6 +3,10 @@ package com.manager;
 import java.sql.Statement;
 import java.util.Scanner;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import de.vandermeer.asciitable.AsciiTable;
+import java.time.LocalDate;
 
 public class Menu {
     public static void menu(Statement stmt, Scanner scanner, ResultSet manager){
@@ -20,9 +24,29 @@ public class Menu {
             //row.getString("role");
             try{
                 if(input.equals("1")){
-                    System.out.println("list pending expenses to be implemented");
+                    String pending = """
+                        Select e.id, u.full_name, e.expense_date, c.name,
+                        e.amount, e.description from expenses as e
+                        inner join users as u on u.id = e.user_id
+                        inner join categories as c on c.id = e.category_id
+                        inner join approvals as a on a.expense_id = e.id
+                        where a.status like "pending"
+                        order by e.expense_date
+                    """;
+                    stmt.execute(pending);
+                    ResultSet rows = stmt.getResultSet();
+                    if (!rows.isBeforeFirst()){
+                        System.out.println("No pending expenses");
+                    }else{
+                        printRows(rows);
+                    }
+                    
                 }else if(input.equals("2")){
                     System.out.println("review an expense to be implemented");
+                    //ask for expense id and whether you wanna approve or deny
+                    //then handle accordingly
+                    LocalDate today = LocalDate.now();
+                    System.out.println("Today's date: "+today);
                 }else if(input.equals("3")){
                     System.out.println("reports to be implemented");
                 }else if(input.equals("0")){
@@ -37,4 +61,32 @@ public class Menu {
             }         
         }
     }
+
+    public static void printRows(ResultSet rs) throws SQLException {
+        ResultSetMetaData metaData = rs.getMetaData();
+        int columnCount = metaData.getColumnCount();
+        AsciiTable at = new AsciiTable();
+
+        // Add headers
+        String[] headers = new String[columnCount];
+        for (int i = 1; i <= columnCount; i++) {
+            headers[i - 1] = metaData.getColumnLabel(i);
+        }
+        at.addRule();
+        at.addRow((Object[]) headers);
+        at.addRule();
+
+        // Add rows
+        while (rs.next()) {
+            String[] row = new String[columnCount];
+            for (int i = 1; i <= columnCount; i++) {
+                row[i - 1] = rs.getString(i);
+            }
+            at.addRow((Object[]) row);
+            at.addRule();
+        }
+
+        System.out.println(at.render());
+    }
+
 }
