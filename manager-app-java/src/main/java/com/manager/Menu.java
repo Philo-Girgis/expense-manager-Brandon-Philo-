@@ -9,7 +9,7 @@ import de.vandermeer.asciitable.AsciiTable;
 import java.time.LocalDate;
 
 public class Menu {
-    public static void menu(Statement stmt, Scanner scanner, ResultSet manager){
+    public static void menu(Statement stmt, Scanner scanner, String manager_name, String manager_id){
         while(true){
             System.out.println("Menu Options");
             System.out.println("1: List pending expenses");
@@ -42,15 +42,67 @@ public class Menu {
                     }
                     
                 }else if(input.equals("2")){
-                    System.out.println("review an expense to be implemented");
-                    //ask for expense id and whether you wanna approve or deny
-                    //then handle accordingly
-                    LocalDate today = LocalDate.now();
-                    System.out.println("Today's date: "+today);
+                    
+                    System.out.print("Please enter a pending expense id: ");
+                    String id = scanner.nextLine().trim();
+                    if (!id.matches("\\d+")){
+                        System.out.println("Invalid input, returning to Menu");
+                        continue;
+                    }
+                    String check = """
+                        Select * from approvals
+                        where status like "pending" and expense_id =
+                    """ + id;
+                    stmt.execute(check);
+                    ResultSet rows = stmt.getResultSet();
+                    if (!rows.isBeforeFirst()){
+                        System.out.println("Invalid expense id, returning to Menu");
+                        continue;
+                    }
+
+                    String update = "Update approvals set ";
+                    update += "reviewer_id = '" +manager_id+"', ";
+                    update += "review_date = '"+LocalDate.now()+"', ";
+                    
+                    System.out.println("Would you like to approve or deny this expense?");
+                    System.out.println("a: Approve");
+                    System.out.println("d: Deny");
+                    System.out.print("Please enter your selection: ");
+                    String decision = scanner.nextLine().trim();
+
+                    if(decision.equalsIgnoreCase("a")){
+                        update += "status = 'approved'";
+                        System.out.println("Please submit a comment (or press enter to continue)");
+                        String comment = scanner.nextLine().trim();
+                        if(!comment.equals("")){
+                            update += "comment = '"+comment+"'";
+                        }
+                        System.out.println("This expense has successfully been approved");
+                    }else if(decision.equalsIgnoreCase("d")){
+                        update += "status = 'denied', ";
+                        while(true){
+                            System.out.println("Please submit a comment");
+                            String comment = scanner.nextLine().trim();
+                            if(comment.equals("")){
+                                System.out.println("Denied requests must have a comment");
+                            }else{
+                                update += "comment = '"+comment+"'";
+                                break;
+                            }
+                        }
+                        System.out.println("This expense has successfully been denied");
+                        
+                    }else{
+                        System.out.println("Invalid input, returning to Menu");
+                        continue;
+                    }
+                    update += " where expense_id = " +id;
+                    //do the thing
+                    stmt.execute(update);
                 }else if(input.equals("3")){
                     System.out.println("reports to be implemented");
                 }else if(input.equals("0")){
-                    System.out.println("Goodbye, "+manager.getString("full_name"));
+                    System.out.println("Goodbye, "+manager_name);
                     break;
                 }else{
                     System.out.println("Invalid input, please try again");

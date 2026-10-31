@@ -40,7 +40,7 @@ public class Main {
                 }
 
                 stmt.execute(
-    "Select username, password, role, full_name from users where username = '"+user.trim()+"' and password = '"+pasw.trim()+"'");
+    "Select * from users where username = '"+user.trim()+"' and password = '"+pasw.trim()+"'");
                 
                 ResultSet row = stmt.getResultSet();
                 if(!row.next()){
@@ -52,7 +52,7 @@ public class Main {
                 }else{
                     failed = 0;
                     System.out.println("Welcome, "+row.getString("full_name"));
-                    Menu.menu(stmt, scanner, row);
+                    Menu.menu(stmt, scanner, row.getString("full_name"), row.getString("id"));
                 }
 
                 if(failed == 3){
