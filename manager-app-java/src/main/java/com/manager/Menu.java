@@ -2,11 +2,15 @@ package com.manager;
 
 import java.sql.Statement;
 import java.util.Scanner;
+import java.io.FileWriter;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import de.vandermeer.asciitable.AsciiTable;
+import com.opencsv.CSVWriter;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Menu {
     public static void menu(Statement stmt, Scanner scanner, String manager_name, String manager_id){
@@ -18,10 +22,6 @@ public class Menu {
             System.out.println("0: Exit");
             System.out.print("Please enter the number of your selection: ");
             String input = scanner.nextLine().trim();
-            //stmt.execute("Select * from users");
-            //ResultSet row = stmt.getResultSet();
-            //row.next();
-            //row.getString("role");
             try{
                 if(input.equals("1")){
                     String pending = """
@@ -100,7 +100,78 @@ public class Menu {
                     //do the thing
                     stmt.execute(update);
                 }else if(input.equals("3")){
-                    System.out.println("reports to be implemented");
+                    //just missing datarange cause i dont know what that means
+                    System.out.println("Would you like reports by employee or category?");
+                    System.out.println("e: Employee");
+                    System.out.println("c: Category");
+                    System.out.println("d: Date Range");
+                    System.out.print("Please enter your selection: ");
+                    String decision = scanner.nextLine().trim();
+                    String fileName = "";
+
+                    String report = """
+                        count(*) as count, round(sum(e.amount),2) as total_amount,
+                        SUM(CASE WHEN a.status = 'approved' THEN 1 ELSE 0 END) AS total_approved
+                        from expenses as e inner join approvals as a on a.expense_id = e.id
+                    """;
+
+                    if(decision.equalsIgnoreCase("e")){
+                        report = "Select u.full_name, " + report +
+                        " inner join users as u on u.id = e.user_id group by u.full_name";
+                        fileName = "employee_";
+                    }else if(decision.equalsIgnoreCase("c")){
+                        report = "Select c.name, " + report +
+                        " inner join categories as c on c.id = e.category_id group by c.name";
+                        fileName = "category_";
+                    }else if(decision.equalsIgnoreCase("d")){
+                        System.out.print("Please enter a starting date (YYYY-MM-DD): ");
+                        String start = scanner.nextLine().trim();
+                        System.out.print("Please enter an ending date (YYYY-MM-DD): ");
+                        String end = scanner.nextLine().trim();
+                        if(!start.matches("^\\d{4}-\\d{2}-\\d{2}$") || 
+                        !end.matches("^\\d{4}-\\d{2}-\\d{2}$") ||
+                        LocalDate.parse(end).isBefore(LocalDate.parse(start))){
+                            System.out.println("Invalid date range, returning to Menu");
+                            continue;
+                        }
+                        report = "Select e.expense_date, "+report+
+                        " where e.expense_date between '"+start+"' and '"+end+
+                        "' group by e.expense_date";
+                        fileName = "dateRange_";
+                    }else{
+                        System.out.println("Invalid input, returning to Menu");
+                        continue;
+                    }
+                    
+                    stmt.execute(report);
+                    ResultSet rows = stmt.getResultSet();
+                    if (!rows.isBeforeFirst()){
+                        System.out.println("No data for the selected criteria");
+                        continue;
+                    }else{
+                        printRows(rows);
+                    }
+                    
+                    System.out.println("Would you like to print out this report?");
+                    System.out.println("y: Yes");
+                    System.out.println("n: No");
+                    System.out.print("Please enter your selection: ");
+                    decision = scanner.nextLine().trim();
+
+                    if(decision.equalsIgnoreCase("y")){
+                        System.out.println("Exporting the report as a CSV");
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
+                        fileName += LocalDateTime.now().format(formatter);
+                        stmt.execute(report);
+                        rows = stmt.getResultSet();
+                        exportCSV(rows, fileName);
+                    }else if(decision.equalsIgnoreCase("n")){
+                        System.out.println("Returning to Menu");
+                    }else{
+                        System.out.println("Invalid input, returning to Menu");
+                    }
+
+
                 }else if(input.equals("0")){
                     System.out.println("Goodbye, "+manager_name);
                     break;
@@ -114,6 +185,34 @@ public class Menu {
         }
     }
 
+    //created with help of AI, just asked it how to write to csv
+    public static void exportCSV(ResultSet rs, String fileName) {
+        try (CSVWriter writer = new CSVWriter(new FileWriter("reports/"+fileName+".csv"))) {
+            ResultSetMetaData metaData = rs.getMetaData();
+            int columnCount = metaData.getColumnCount();
+
+            // Write headers
+            String[] headers = new String[columnCount];
+            for (int i = 1; i <= columnCount; i++) {
+                headers[i - 1] = metaData.getColumnName(i);
+            }
+            writer.writeNext(headers);
+
+            // Write rows
+            while (rs.next()) {
+                String[] row = new String[columnCount];
+                for (int i = 1; i <= columnCount; i++) {
+                    row[i - 1] = rs.getString(i);
+                }
+                writer.writeNext(row);
+            }
+            System.out.println("The report was successfully exported");
+        } catch (Exception e) {
+            System.out.println("Sorry, looks like the report couldn't be exported");
+        }
+    }
+
+    //created with help of Ai. just asked it to how to print rows nicely
     public static void printRows(ResultSet rs) throws SQLException {
         ResultSetMetaData metaData = rs.getMetaData();
         int columnCount = metaData.getColumnCount();
