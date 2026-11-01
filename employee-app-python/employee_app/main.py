@@ -1,44 +1,52 @@
-
-import os
 import sys
-from testsql import get_connection
-from testsql import getRoot
+from employee_app.db import initialize_database, get_connection
+from employee_app.menu import employee_menu
 
 
 if __name__ == "__main__":
+
     failed = 0
-    HERE = getRoot()
-    if not HERE:
-        print("cannot find root")
-        sys.exit(1)
-        
-    SCHEMA = os.path.join(HERE, "sql", "schema.sql")
-    SEED = os.path.join(HERE, "sql", "seed.sql")
-    with get_connection() as conn:
-        with open(SCHEMA, encoding="utf-8") as f:
-            conn.executescript(f.read())
-        with open(SEED, encoding="utf-8") as f:
-            conn.executescript(f.read())
-            
-        while True:
-            user = input("Please enter your username: ")
-            pasw = input("Please enter your password: ")
-            if not user.strip() or not pasw.strip():
-                print("Username or Password is empty. Please try again")
-                continue
-            
-            cursor = conn.execute(
-    f"Select username, password, role, full_name from users where username = '{user.strip()}' and password = '{pasw.strip()}'")
-            rows = cursor.fetchall()
-            if not rows:
-                failed +=1
-                print("Invalid username or password")
-            elif rows[0][2] != "employee":
-                print("This account does not have access to this app")
-                sys.exit(1)
-            else:
-                failed = 0
-                print(f"Welcome, {rows[0][3]}")
-            if failed == 3:
-                print("Too many failed attempts")
-                sys.exit(1)
+
+    # Initialize the shared in-memory database.
+    initialize_database()
+
+    connection = get_connection()
+
+    # Employee login.
+    while True:
+
+        user = input("Please enter your username: ")
+        password = input("Please enter your password: ")
+
+        if not user.strip() or not password.strip():
+            print("Username or password is empty. Please try again.")
+            continue
+
+        employee = connection.execute(
+            """
+            SELECT id, username, password, role, full_name
+            FROM users
+            WHERE username = ? AND password = ?
+            """,
+            (user.strip(), password.strip())
+        ).fetchone()
+
+        if employee is None:
+            failed += 1
+            print("Invalid username or password.")
+
+        elif employee["role"] != "employee":
+            print("This account does not have access to this app.")
+            sys.exit(1)
+
+        else:
+            print(f"\nWelcome, {employee['full_name']}!")
+
+            # Open the employee menu after successful login.
+            employee_menu(employee["id"])
+
+            break
+
+        if failed == 3:
+            print("Too many failed attempts.")
+            sys.exit(1)
