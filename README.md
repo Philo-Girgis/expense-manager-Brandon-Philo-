@@ -1,9 +1,6 @@
 # expense-manager-Brandon-Philo-
 
-Set environment variable "EM_DB_PATH" to the location of your database folder (reset ide afterwards)
-
-Also need to add pytest to the requirements.txt
-
+Set environment variable "EM_DB_PATH" to the location of your database file (reset ide afterwards)
 
 for python (inside employee-app-python):
 - python -m venv .venv
