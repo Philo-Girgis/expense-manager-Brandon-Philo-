@@ -132,3 +132,47 @@ def update_pending_expense(user_id, expense_id, amount, category_id, description
         )
 
     return True
+
+
+def delete_pending_expense(user_id, expense_id):
+    """Delete an expense if it belongs to the employee and is still pending approval."""
+
+    connection = get_connection()
+
+    # Check expense belongs to the employee and is still pending approval.
+    expense = connection.execute(
+        """
+        SELECT e.id
+        FROM expenses e
+        JOIN approvals a
+            ON e.id = a.expense_id
+        WHERE e.id = ?
+          AND e.user_id = ?
+          AND a.status = 'pending'
+        """,
+        (expense_id, user_id),
+    ).fetchone()
+
+    if expense is None:
+        raise ValueError("Expense not found, or it is not eligible for deletion.")
+
+    # Delete the approval first, then the expense.
+    with connection:
+        connection.execute(
+            """
+            DELETE FROM approvals
+            WHERE expense_id = ?
+            """,
+            (expense_id,),
+        )
+
+        connection.execute(
+            """
+            DELETE FROM expenses
+            WHERE id = ?
+              AND user_id = ?
+            """,
+            (expense_id, user_id),
+        )
+
+    return True

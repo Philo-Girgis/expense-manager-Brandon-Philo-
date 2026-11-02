@@ -1,5 +1,5 @@
 from employee_app.db import get_categories
-from employee_app.services import submit_expense, get_expenses, update_pending_expense
+from employee_app.services import submit_expense, get_expenses, update_pending_expense, delete_pending_expense
 
 
 def display_menu():
@@ -121,6 +121,27 @@ def edit_pending_expense_menu(user_id):
         print(f"\nAn unexpected error occurred: {error}")
 
 
+def delete_pending_expense_menu(user_id):
+    """Delete an employee's pending expense."""
+
+    print("\n========== DELETE PENDING EXPENSE ==========")
+
+    try:
+        expense_id = int(input("Enter the expense ID to delete: "))
+
+        # Delete the expense.
+        delete_pending_expense(user_id, expense_id)
+
+        print("\nExpense deleted successfully!")
+        print(f"Deleted expense ID: {expense_id}")
+
+    except ValueError as error:
+        print(f"\nUnable to delete expense: {error}")
+
+    except Exception as error:
+        print(f"\nAn unexpected error occurred: {error}")
+
+
 
 def employee_menu(user_id):
     """Display and handle employee menu selections."""
@@ -140,7 +161,7 @@ def employee_menu(user_id):
             edit_pending_expense_menu(user_id)
 
         elif choice == "4":
-            print("\nDelete pending expenses - Not implemented yet.")
+            delete_pending_expense_menu(user_id)
 
         elif choice == "5":
             print("\nReview history - Not implemented yet.")
