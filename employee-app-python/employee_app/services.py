@@ -176,3 +176,37 @@ def delete_pending_expense(user_id, expense_id):
         )
 
     return True
+
+
+def get_review_history(user_id):
+    """Retrieve approved and denied expenses for a specific employee, including the manager's review comment and review date."""
+
+    connection = get_connection()
+
+    history = connection.execute(
+        """
+        SELECT
+            e.id,
+            e.amount,
+            c.name AS category,
+            e.description,
+            e.expense_date,
+            a.status,
+            a.comment,
+            a.review_date,
+            u.full_name AS reviewer
+        FROM expenses e
+        JOIN categories c
+            ON e.category_id = c.id
+        JOIN approvals a
+            ON e.id = a.expense_id
+        LEFT JOIN users u
+            ON a.reviewer_id = u.id
+        WHERE e.user_id = ?
+          AND a.status IN ('approved', 'denied')
+        ORDER BY a.review_date DESC, e.id DESC
+        """,
+        (user_id,),
+    ).fetchall()
+
+    return history

@@ -1,5 +1,5 @@
 from employee_app.db import get_categories
-from employee_app.services import submit_expense, get_expenses, update_pending_expense, delete_pending_expense
+from employee_app.services import submit_expense, get_expenses, update_pending_expense, delete_pending_expense, get_review_history
 
 
 def display_menu():
@@ -142,6 +142,37 @@ def delete_pending_expense_menu(user_id):
         print(f"\nAn unexpected error occurred: {error}")
 
 
+def review_history_menu(user_id):
+    """Display the employee's approved and denied expenses."""
+
+    print("\n========== REVIEW HISTORY ==========")
+
+    try:
+        history = get_review_history(user_id)
+
+        if not history:
+            print("\nYou have no reviewed expenses yet.")
+            return
+
+        for expense in history:
+            print("\n" + "-" * 55)
+            print(f"Expense ID:         {expense['id']}")
+            print(f"Amount:             ${expense['amount']:.2f}")
+            print(f"Category:           {expense['category']}")
+            print(f"Description:        {expense['description']}")
+            print(f"Expense Date:       {expense['expense_date']}")
+            print(f"Status:             {expense['status'].upper()}")
+            print(f"Reviewed By:        {expense['reviewer'] or 'Unknown'}")
+            print(f"Review Date:        {expense['review_date'] or 'N/A'}")
+            print(f"Manager Comment:    {expense['comment'] or 'No comment'}")
+
+        print("\n" + "-" * 55)
+        print(f"Total reviewed expenses: {len(history)}")
+
+    except Exception as error:
+        print(f"\nUnable to retrieve review history: {error}")
+
+
 
 def employee_menu(user_id):
     """Display and handle employee menu selections."""
@@ -164,7 +195,7 @@ def employee_menu(user_id):
             delete_pending_expense_menu(user_id)
 
         elif choice == "5":
-            print("\nReview history - Not implemented yet.")
+            review_history_menu(user_id)
 
         elif choice == "0":
             print("\nExiting employee app. Goodbye!")
