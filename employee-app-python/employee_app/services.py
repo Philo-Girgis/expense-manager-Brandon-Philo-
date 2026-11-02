@@ -58,3 +58,24 @@ def submit_expense(user_id, amount, category_id, description, expense_date):
 
     return expense_id
 
+
+def get_expenses(user_id):
+    """Retrieve all expenses submitted by a specific employee. Includes the expense category and current approval status."""
+
+    connection = get_connection()
+
+    expenses = connection.execute(
+        """
+        SELECT e.id, e.amount, c.name AS category, e.description, e.expense_date, a.status
+        FROM expenses e
+        JOIN categories c
+            ON e.category_id = c.id
+        LEFT JOIN approvals a
+            ON e.id = a.expense_id
+        WHERE e.user_id = ?
+        ORDER BY e.expense_date DESC, e.id DESC
+        """,
+        (user_id,),
+    ).fetchall()
+
+    return expenses

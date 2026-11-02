@@ -1,5 +1,5 @@
 from employee_app.db import get_categories
-from employee_app.services import submit_expense
+from employee_app.services import submit_expense, get_expenses
 
 
 def display_menu():
@@ -45,6 +45,46 @@ def submit_expense_menu(user_id):
         print(f"\nUnable to submit expense: {error}")
 
 
+def view_expenses_menu(user_id):
+    """Display all expenses submitted by the logged-in employee."""
+
+    print("\n========== MY EXPENSES ==========")
+
+    try:
+        expenses = get_expenses(user_id)
+
+        if not expenses:
+            print("\nYou have not submitted any expenses yet.")
+            return
+
+        print(
+            f"\n{'ID':<6}"
+            f"{'Amount':<12}"
+            f"{'Category':<20}"
+            f"{'Description':<82}"
+            f"{'Date':<14}"
+            f"{'Status':<12}"
+        )
+
+        print("-" * 146)
+
+        for expense in expenses:
+            print(
+                f"{expense['id']:<6}"
+                f"${expense['amount']:<11.2f}"
+                f"{expense['category']:<20}"
+                f"{expense['description'][:80]:<82}"
+                f"{expense['expense_date']:<14}"
+                f"{(expense['status'] or 'Unknown'):<12}"
+            )
+
+        print("-" * 146)
+        print(f"Total expenses: {len(expenses)}")
+
+    except Exception as error:
+        print(f"\nUnable to retrieve expenses: {error}")
+
+
 
 def employee_menu(user_id):
     """Display and handle employee menu selections."""
@@ -58,7 +98,7 @@ def employee_menu(user_id):
             submit_expense_menu(user_id)
 
         elif choice == "2":
-            print("\nView expenses - Not implemented yet.")
+            view_expenses_menu(user_id)
 
         elif choice == "3":
             print("\nEdit pending expenses - Not implemented yet.")
