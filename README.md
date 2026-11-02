@@ -1,15 +1,15 @@
 # expense-manager-Brandon-Philo-
 
-We need to eventually implement a shared database via "EM_DB_PATH"
-Will probably modify the testsql and the schema to reset the database
-Need to remove those setters in the main files
-Discuss first so we're on the same page
+Set environment variable "EM_DB_PATH" to the location of your database folder (reset ide afterwards)
+
 Also need to add pytest to the requirements.txt
+
 
 for python (inside employee-app-python):
 - python -m venv .venv
 - .venv\Scripts\activate
 - python -m pip install -r requirements.txt
+- python -m employee_app.main
 
 for java:
 - java from oracle (vscode extension)

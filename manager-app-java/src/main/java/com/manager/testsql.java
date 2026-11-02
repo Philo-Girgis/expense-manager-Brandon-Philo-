@@ -4,8 +4,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
+//import java.sql.ResultSet;
+//import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import org.sqlite.SQLiteConfig;
@@ -13,7 +13,7 @@ import org.sqlite.SQLiteConfig;
 public class testsql {
     private static Path schema = Path.of("sql", "schema.sql");
     private static Path seed = Path.of("sql", "seed.sql");
-    private static Path queries = Path.of("sql", "validation", "test.sql");
+    //private static Path queries = Path.of("sql", "validation", "test.sql");
 
     public static void main(String[] args){
         
@@ -36,6 +36,9 @@ public class testsql {
                 }
             }
 
+            System.out.println("Reset successfull");
+
+            /*
             String temp = Files.readString(queries);
             String[] tests = temp.split(";");
 
@@ -65,7 +68,7 @@ public class testsql {
                     System.out.println("✔ Executed successfully. Rows affected / status code: " + updateCount + "\n");
                 }
             }
-
+            */
 
         }catch(Exception e){
             System.err.println("Error executing SQL script: " + e.getMessage());
@@ -73,6 +76,7 @@ public class testsql {
         }
     }
 
+    /* 
     private static void printNicely(ResultSet rs) throws SQLException {
         ResultSetMetaData metaData = rs.getMetaData();
         int columnCount = metaData.getColumnCount();
@@ -96,11 +100,13 @@ public class testsql {
         System.out.println("\n(" + rowCount + " row(s) returned)\n");
     }
 
+    */
+
     public static Connection connect() throws SQLException {
         SQLiteConfig config = new SQLiteConfig();
         config.enforceForeignKeys(true);
         config.setBusyTimeout(5000);
-        return DriverManager.getConnection("jdbc:sqlite::memory:", config.toProperties());
+        return DriverManager.getConnection("jdbc:sqlite:"+System.getenv("EM_DB_PATH"), config.toProperties());
     }
 
 }

@@ -1,3 +1,9 @@
+drop table if exists approvals;
+drop table if exists expenses;
+drop table if exists categories;
+drop table if exists users;
+
+
 create table users (
     id integer primary key,
     username text not null unique,

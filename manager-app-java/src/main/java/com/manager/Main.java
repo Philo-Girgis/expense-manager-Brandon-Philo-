@@ -1,7 +1,5 @@
 package com.manager;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -11,24 +9,11 @@ import java.util.Scanner;
 //still need to connect databases via em_db_path
 //will need to create a file to setup/reset the db rather than doing it from each app
 public class Main {
-    private static Path schema = Path.of("sql", "schema.sql");
-    private static Path seed = Path.of("sql", "seed.sql");
     public static void main(String[] args){
         Scanner scanner = new Scanner(System.in);
         try (Connection conn = testsql.connect()) {
             Statement stmt = conn.createStatement();
-            // Read the entire file content into a String
-            String content = Files.readString(schema) +" "+ Files.readString(seed);
-            // Split the script by semicolons to get individual SQL statements
-            String[] statements = content.split(";");
-            //creating and populating tables
-            for (String sql : statements) {
-                String trimmedSql = sql.trim();
-                // Skip empty lines or comments
-                if (!trimmedSql.isEmpty() && !trimmedSql.startsWith("--")) {
-                    stmt.execute(trimmedSql);
-                }
-            }
+            
             int failed = 0;
 
             while(true){
