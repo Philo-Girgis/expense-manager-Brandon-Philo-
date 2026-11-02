@@ -79,3 +79,56 @@ def get_expenses(user_id):
     ).fetchall()
 
     return expenses
+
+
+def update_pending_expense(user_id, expense_id, amount, category_id, description, expense_date):
+    """Update an expense if it belongs to the employee and is still pending approval."""
+
+    # Validate the new expense details.
+    amount = validate_amount(amount)
+    category_id = validate_category(category_id)
+    description = validate_description(description)
+    expense_date = validate_expense_date(expense_date)
+
+    connection = get_connection()
+
+    # Check that this expense belongs to the employee and is still pending approval.
+    expense = connection.execute(
+        """
+        SELECT e.id
+        FROM expenses e
+        JOIN approvals a
+            ON e.id = a.expense_id
+        WHERE e.id = ?
+          AND e.user_id = ?
+          AND a.status = 'pending'
+        """,
+        (expense_id, user_id),
+    ).fetchone()
+
+    if expense is None:
+        raise ValueError("Expense not found, or it is not eligible for editing.")
+
+    # Update the expense details together.
+    with connection:
+        connection.execute(
+            """
+            UPDATE expenses
+            SET amount = ?,
+                category_id = ?,
+                description = ?,
+                expense_date = ?
+            WHERE id = ?
+              AND user_id = ?
+            """,
+            (
+                float(amount),
+                category_id,
+                description,
+                expense_date,
+                expense_id,
+                user_id,
+            ),
+        )
+
+    return True

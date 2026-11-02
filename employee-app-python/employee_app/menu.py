@@ -1,5 +1,5 @@
 from employee_app.db import get_categories
-from employee_app.services import submit_expense, get_expenses
+from employee_app.services import submit_expense, get_expenses, update_pending_expense
 
 
 def display_menu():
@@ -85,6 +85,42 @@ def view_expenses_menu(user_id):
         print(f"\nUnable to retrieve expenses: {error}")
 
 
+def edit_pending_expense_menu(user_id):
+    """Collect new details and edit an employee's pending expense."""
+
+    print("\n========== EDIT PENDING EXPENSE ==========")
+
+    try:
+        # Get expense to edit.
+        expense_id = int(input("Enter the expense ID to edit: "))
+
+        # Display available categories.
+        categories = get_categories()
+
+        print("\nAvailable Categories:")
+        for category in categories:
+            print(f"{category['id']}. {category['name']}")
+
+        # Collect the updated information.
+        amount = input("\nEnter new expense amount: ")
+        category_id = input("Select new category (1-6): ")
+        description = input("Enter new description: ")
+        expense_date = input("Enter new expense date (YYYY-MM-DD): ")
+
+        # Update the expense.
+        update_pending_expense(user_id, expense_id, amount, category_id, description, expense_date)
+
+        print("\nExpense updated successfully!")
+        print(f"Expense ID: {expense_id}")
+        print("Status: Pending approval")
+
+    except ValueError as error:
+        print(f"\nUnable to edit expense: {error}")
+
+    except Exception as error:
+        print(f"\nAn unexpected error occurred: {error}")
+
+
 
 def employee_menu(user_id):
     """Display and handle employee menu selections."""
@@ -101,7 +137,7 @@ def employee_menu(user_id):
             view_expenses_menu(user_id)
 
         elif choice == "3":
-            print("\nEdit pending expenses - Not implemented yet.")
+            edit_pending_expense_menu(user_id)
 
         elif choice == "4":
             print("\nDelete pending expenses - Not implemented yet.")
