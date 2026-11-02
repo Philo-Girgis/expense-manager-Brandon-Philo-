@@ -7,6 +7,9 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Scanner;
 
+//probably need to add logging and better error handling
+//still need to connect databases via em_db_path
+//will need to create a file to setup/reset the db rather than doing it from each app
 public class Main {
     private static Path schema = Path.of("sql", "schema.sql");
     private static Path seed = Path.of("sql", "seed.sql");
@@ -39,8 +42,8 @@ public class Main {
                     continue;
                 }
 
-                stmt.execute(
-    "Select username, password, role, full_name from users where username = '"+user.trim()+"' and password = '"+pasw.trim()+"'");
+                stmt.execute("Select * from users where username = '"
+                    +user.trim()+"' and password = '"+pasw.trim()+"'");
                 
                 ResultSet row = stmt.getResultSet();
                 if(!row.next()){
@@ -52,6 +55,7 @@ public class Main {
                 }else{
                     failed = 0;
                     System.out.println("Welcome, "+row.getString("full_name"));
+                    Menu.menu(stmt, scanner, row.getString("full_name"), row.getString("id"));
                 }
 
                 if(failed == 3){
