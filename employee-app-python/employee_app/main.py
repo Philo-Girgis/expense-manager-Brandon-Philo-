@@ -3,7 +3,7 @@ from employee_app.testsql import get_connection
 from employee_app.menu import employee_menu
 
 
-if __name__ == "__main__":
+def main():
 
     failed = 0
 
@@ -46,3 +46,7 @@ if __name__ == "__main__":
             if failed == 3:
                 print("Too many failed attempts.")
                 sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()
