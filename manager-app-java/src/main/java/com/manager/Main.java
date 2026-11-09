@@ -10,6 +10,10 @@ import java.util.Scanner;
 //will need to create a file to setup/reset the db rather than doing it from each app
 public class Main {
     public static void main(String[] args){
+        smallMain();
+    }
+
+    public static void smallMain(){
         Scanner scanner = new Scanner(System.in);
         try (Connection conn = testsql.connect()) {
             Statement stmt = conn.createStatement();
