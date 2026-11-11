@@ -5,8 +5,8 @@ from unittest.mock import Mock, patch
 #python -m pytest
 
 
-def test_new_invalid_login(capsys):
-    inputs = iter(['a', 'a'])
+def test_valid_employee_login(capsys):
+    inputs = iter(['employee1', 'e1password123'])
     def fake_input(prompt):
         print(prompt)
         try:
@@ -21,9 +21,27 @@ def test_new_invalid_login(capsys):
     captured = capsys.readouterr()
 
     #assert
-    assert "Invalid username or password" in captured.out
+    assert "Welcome, Philip Daniels" in captured.out
 
-def test_invalid_login(capsys):
+def test_valid_user_invalid_pass(capsys):
+    inputs = iter(['employee1', 'password1'])
+    def fake_input(prompt):
+        print(prompt)
+        try:
+            return next(inputs)
+        except StopIteration:
+            raise SystemExit(0)
+
+    #act
+    with patch('builtins.input', side_effect=fake_input):
+        with pytest.raises(SystemExit):
+            main()
+    captured = capsys.readouterr()
+
+    #assert
+    assert "Invalid username or password." in captured.out
+
+def test_invalid_login_old(capsys):
     with patch("employee_app.main.get_connection") as connection:
         # Arrange
         mock_conn = Mock()     
@@ -47,7 +65,7 @@ def test_invalid_login(capsys):
         #assert
         assert "Invalid username or password" in captured.out
 
-def test_empty_username(capsys):
+def test_empty_username_old(capsys):
     with patch("employee_app.main.get_connection") as connection:
         # Arrange
         mock_conn = Mock()     
@@ -71,7 +89,7 @@ def test_empty_username(capsys):
         #assert
         assert "Username or password is empty. Please try again" in captured.out
 
-def test_empty_password(capsys):
+def test_empty_password_old(capsys):
     with patch("employee_app.main.get_connection") as connection:
         # Arrange
         mock_conn = Mock()     
@@ -95,7 +113,7 @@ def test_empty_password(capsys):
         #assert
         assert "Username or password is empty. Please try again" in captured.out
 
-def test_empty_password_and_empty_username(capsys):
+def test_empty_password_and_empty_username_old(capsys):
     with patch("employee_app.main.get_connection") as connection:
         # Arrange
         mock_conn = Mock()     
@@ -119,7 +137,7 @@ def test_empty_password_and_empty_username(capsys):
         #assert
         assert "Username or password is empty. Please try again" in captured.out
 
-def test_manager_in_employee_login(capsys):
+def test_manager_in_employee_login_old(capsys):
     with patch("employee_app.main.get_connection") as connection:
         # Arrange
         mock_conn = Mock()   
@@ -150,7 +168,7 @@ def test_manager_in_employee_login(capsys):
         assert "This account does not have access to this app" in captured.out
 
 
-def test_valid_employee_login(capsys):
+def test_valid_employee_login_old(capsys):
     with patch("employee_app.main.get_connection") as connection:
         # Arrange
         mock_conn = Mock()   
@@ -180,7 +198,7 @@ def test_valid_employee_login(capsys):
         #assert
         assert "Welcome, Philip Daniels" in captured.out
 
-def test_three_failed_attempts(capsys):
+def test_three_failed_attempts_old(capsys):
     with patch("employee_app.main.get_connection") as connection:
         # Arrange
         mock_conn = Mock()     
@@ -204,7 +222,7 @@ def test_three_failed_attempts(capsys):
         #assert
         assert "Too many failed attempts" in captured.out
 
-def test_three_empty_attempts(capsys):
+def test_three_empty_attempts_old(capsys):
     with patch("employee_app.main.get_connection") as connection:
         # Arrange
         mock_conn = Mock()     
@@ -228,7 +246,7 @@ def test_three_empty_attempts(capsys):
         #assert
         assert "Too many failed attempts" not in captured.out
 
-def test_exit_menu(capsys):
+def test_exit_menu_old(capsys):
 
     #arrange
     #gonna have to always exit at the end of my inputs when testing menu
@@ -245,7 +263,7 @@ def test_exit_menu(capsys):
     #assert
     assert "Exiting employee app. Goodbye!" in captured.out
 
-def test_submit_expense(capsys):
+def test_submit_expense_old(capsys):
     with patch("employee_app.menu.submit_expense") as expenseMock:
         #arrange
         mockcat = patch('employee_app.menu.get_categories').start()
@@ -265,7 +283,7 @@ def test_submit_expense(capsys):
         #assert
         assert "Expense submitted successfully!" in captured.out
 
-def test_submit_Invalid_expense(capsys):
+def test_submit_Invalid_expense_old(capsys):
     with patch("employee_app.menu.submit_expense", side_effect=ValueError("bad data")):
         #arrange
         mockcat = patch('employee_app.menu.get_categories').start()
