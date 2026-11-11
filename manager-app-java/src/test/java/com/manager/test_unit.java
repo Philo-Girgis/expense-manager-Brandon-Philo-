@@ -1,5 +1,7 @@
 package com.manager;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -13,11 +15,50 @@ import java.sql.Statement;
 import java.util.Scanner;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.ResultSet;
 
 public class test_unit {
 //click the left side checkmarks to run tests
+
+    protected Path testDbPath;
+
+    @BeforeEach
+    void setUpTestDatabase() throws IOException {
+        testDbPath = Paths.get("test_em.db").toAbsolutePath();
+        System.setProperty("EM_DB_PATH", testDbPath.toString());
+        testsql.reset();
+        
+    }
+    @AfterEach
+    void tearDown(){
+        System.clearProperty("EM_DB_PATH");
+    }
+
+    @Test
+    public void testnewInvalidUsernameAndPassword() throws Exception {
+
+        // Simulate input
+        String simulatedInput = "wrongUser\nwrongPass\n";
+        System.setIn(new ByteArrayInputStream(simulatedInput.getBytes()));
+
+        // Capture console output
+        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outContent));
+
+        //the method being tested
+        Main.smallMain();
+
+        // Verify that the invalid login message was printed
+        String output = outContent.toString();
+        assertTrue(output.contains("Invalid username or password"), 
+            "Expected 'Invalid username or password' message to be printed.");
+    }
+
+
     @Test
     public void testInvalidUsernameAndPassword() throws Exception {
         // Mock the static database connection call: testsql.connect()

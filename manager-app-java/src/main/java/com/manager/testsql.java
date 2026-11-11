@@ -1,7 +1,9 @@
 package com.manager;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 //import java.sql.ResultSet;
@@ -15,13 +17,20 @@ public class testsql {
     private static Path seed = Path.of("sql", "seed.sql");
     //private static Path queries = Path.of("sql", "validation", "test.sql");
 
-    public static void main(String[] args){
-        
+    public static void reset(){
         try (Connection conn = testsql.connect()) {
             Statement stmt = conn.createStatement();
 
             // Read the entire file content into a String
-            String content = Files.readString(schema) +" "+ Files.readString(seed);
+            String content = "";
+            Path root = Paths.get(".").toAbsolutePath().getParent();
+            if(root.toString().endsWith("manager-app-java")){
+                content = Files.readString(root.getParent().resolve(schema))
+                +" "+ Files.readString(root.getParent().resolve(seed));
+            }else{
+                content = Files.readString(schema) +" "+ Files.readString(seed);
+            }
+            
 
 
             // Split the script by semicolons to get individual SQL statements
@@ -35,8 +44,6 @@ public class testsql {
                     stmt.execute(trimmedSql);
                 }
             }
-
-            System.out.println("Reset successfull");
 
             /*
             String temp = Files.readString(queries);
@@ -76,6 +83,11 @@ public class testsql {
         }
     }
 
+    public static void main(String[] args){
+        reset();
+        System.out.println("Reset successfull");
+    }
+
     /* 
     private static void printNicely(ResultSet rs) throws SQLException {
         ResultSetMetaData metaData = rs.getMetaData();
@@ -102,11 +114,15 @@ public class testsql {
 
     */
 
-    public static Connection connect() throws SQLException {
+    public static Connection connect() throws SQLException,IOException {
+        String dbPath = System.getProperty("EM_DB_PATH");
+        if (dbPath == null) {
+            dbPath = System.getenv("EM_DB_PATH");
+        }
         SQLiteConfig config = new SQLiteConfig();
         config.enforceForeignKeys(true);
         config.setBusyTimeout(5000);
-        return DriverManager.getConnection("jdbc:sqlite:"+System.getenv("EM_DB_PATH"), config.toProperties());
+        return DriverManager.getConnection("jdbc:sqlite:"+dbPath, config.toProperties());
     }
 
 }
