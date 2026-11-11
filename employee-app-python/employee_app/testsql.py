@@ -36,7 +36,7 @@ def get_connection():
     finally:
         conn.close()
 
-if __name__ == "__main__":
+def reset():
     HERE = getRoot()
     if not HERE:
         print("cannot find root")
@@ -51,20 +51,23 @@ if __name__ == "__main__":
         with open(SEED, encoding="utf-8") as f:
             conn.executescript(f.read())
 
-        print("Reset successful")
-        """
-            with open(TEST, encoding="utf-8") as f:
-                        queries = f.read().split(";")
-                        for query in queries:
-                            if query.strip():
-                                cursor = conn.execute(query)
-                                rows = cursor.fetchall()
-                                if rows:
-                                    headers = [col[0] for col in cursor.description]
-                                    table_data = [list(row) for row in rows]
-                                    
-                                    print(tabulate(table_data, headers=headers, tablefmt="pretty"))
-                                else:
-                                    print("No records found.")
-        """
+if __name__ == "__main__":
+    reset()
+
+    print("Reset successful")
+    """
+        with open(TEST, encoding="utf-8") as f:
+                    queries = f.read().split(";")
+                    for query in queries:
+                        if query.strip():
+                            cursor = conn.execute(query)
+                            rows = cursor.fetchall()
+                            if rows:
+                                headers = [col[0] for col in cursor.description]
+                                table_data = [list(row) for row in rows]
+                                
+                                print(tabulate(table_data, headers=headers, tablefmt="pretty"))
+                            else:
+                                print("No records found.")
+    """
         
