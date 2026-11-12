@@ -4,7 +4,8 @@ insert into users(id, username, password, role, full_name) values
 (3, 'employee1', 'e1password123', 'employee', 'Philip Daniels'),
 (4, 'employee2', 'e2password123', 'employee', 'Jane Doe'),
 (5, 'employee3', 'e3password123', 'employee', 'Michael Johnson'),
-(6, 'employee4', 'e4password123', 'employee', 'Charlotte Sinclair');
+(6, 'employee4', 'e4password123', 'employee', 'Charlotte Sinclair'),
+(7, 'employee5', 'e5password123', 'employee', 'Adam Fischer');
 
 insert into categories(id, name) values
 (1, 'Travel'),
