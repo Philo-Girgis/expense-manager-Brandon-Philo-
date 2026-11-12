@@ -547,11 +547,7 @@ public class test_unit {
     }
 
 
-
-    // ==========================================
-    // Expense review - invalid decision
-    // ==========================================
-
+    // Test an invalid review decision
     @Test
     public void testInvalidReviewDecision() throws Exception {
 
