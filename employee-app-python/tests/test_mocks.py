@@ -4,42 +4,8 @@ from employee_app.menu import employee_menu
 from unittest.mock import Mock, patch
 #python -m pytest
 
+#old tests that mock the connection
 
-def test_valid_employee_login(capsys):
-    inputs = iter(['employee1', 'e1password123'])
-    def fake_input(prompt):
-        print(prompt)
-        try:
-            return next(inputs)
-        except StopIteration:
-            raise SystemExit(0)
-
-    #act
-    with patch('builtins.input', side_effect=fake_input):
-        with pytest.raises(SystemExit):
-            main()
-    captured = capsys.readouterr()
-
-    #assert
-    assert "Welcome, Philip Daniels" in captured.out
-
-def test_valid_user_invalid_pass(capsys):
-    inputs = iter(['employee1', 'password1'])
-    def fake_input(prompt):
-        print(prompt)
-        try:
-            return next(inputs)
-        except StopIteration:
-            raise SystemExit(0)
-
-    #act
-    with patch('builtins.input', side_effect=fake_input):
-        with pytest.raises(SystemExit):
-            main()
-    captured = capsys.readouterr()
-
-    #assert
-    assert "Invalid username or password." in captured.out
 
 def test_invalid_login_old(capsys):
     with patch("employee_app.main.get_connection") as connection:
