@@ -74,21 +74,30 @@ public class Menu {
                         update += "status = 'approved'";
                         System.out.println("Please submit a comment (or press enter to continue)");
                         String comment = scanner.nextLine().trim();
-                        if(!comment.equals("")){
-                            update += "comment = '"+comment+"'";
+                        if(comment.length() > 200){
+                            System.out.println("Comment cannot be greater than 200 characters, returning to Menu");
+                            continue;
+                        }else if(!comment.equals("")){
+                            update += ", comment = '"+comment+"'";
                         }
+                        
                         System.out.println("This expense has successfully been approved");
                     }else if(decision.equalsIgnoreCase("d")){
                         update += "status = 'denied', ";
+                        String comment = "";
                         while(true){
                             System.out.println("Please submit a comment");
-                            String comment = scanner.nextLine().trim();
+                             comment = scanner.nextLine().trim();
                             if(comment.equals("")){
                                 System.out.println("Denied requests must have a comment");
                             }else{
                                 update += "comment = '"+comment+"'";
                                 break;
                             }
+                        }
+                        if(comment.length() < 5 || comment.length() > 200){
+                            System.out.println("Comment must be between 5 and 200 characters, returning to Menu");
+                            continue;
                         }
                         System.out.println("This expense has successfully been denied");
                         

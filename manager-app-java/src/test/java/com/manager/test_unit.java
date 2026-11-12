@@ -390,7 +390,7 @@ public class test_unit {
 
         String comment = "Looks good"; // Exactly 10 characters
 
-        String output = runMenuWithDatabase(
+        runMenuWithDatabase(
             "2\n1\na\n" + comment + "\n0\n"
         );
 
@@ -406,7 +406,7 @@ public class test_unit {
 
         String comment = "A".repeat(200);
 
-        String output = runMenuWithDatabase(
+        runMenuWithDatabase(
             "2\n1\na\n" + comment + "\n0\n"
         );
 
@@ -421,7 +421,7 @@ public class test_unit {
 
         String comment = "A".repeat(201);
 
-        String output = runMenuWithDatabase(
+        runMenuWithDatabase(
             "2\n1\na\n" + comment + "\n0\n"
         );
 
@@ -460,7 +460,7 @@ public class test_unit {
 
         String comment = "Valid";
 
-        String output = runMenuWithDatabase(
+        runMenuWithDatabase(
             "2\n1\nd\n\n" + comment + "\n0\n"
         );
 
@@ -476,7 +476,7 @@ public class test_unit {
 
         String comment = "Nope"; // Exactly 4 characters
 
-        String output = runMenuWithDatabase(
+        runMenuWithDatabase(
             "2\n1\nd\n" + comment + "\n0\n"
         );
 
@@ -491,7 +491,7 @@ public class test_unit {
 
         String comment = "A".repeat(201);
 
-        String output = runMenuWithDatabase(
+        runMenuWithDatabase(
             "2\n1\nd\n" + comment + "\n0\n"
         );
 
@@ -506,7 +506,7 @@ public class test_unit {
 
         String comment = "Valid"; // Exactly 5 characters
 
-        String output = runMenuWithDatabase(
+        runMenuWithDatabase(
             "2\n1\nd\n" + comment + "\n0\n"
         );
 
@@ -522,7 +522,7 @@ public class test_unit {
 
         String comment = "A".repeat(200);
 
-        String output = runMenuWithDatabase(
+        runMenuWithDatabase(
             "2\n1\nd\n" + comment + "\n0\n"
         );
 
@@ -538,7 +538,7 @@ public class test_unit {
 
         String comment = "AAAAAAAAAAAAAAA"; // Exactly 15 characters
 
-        String output = runMenuWithDatabase(
+        runMenuWithDatabase(
             "2\n1\nd\n" + comment + "\n0\n"
         );
 
