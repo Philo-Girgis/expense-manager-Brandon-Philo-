@@ -1,0 +1,18 @@
+Employee App (Python)
+
+Test Case ID	  Title
+TC-PEA-002	    Login to employee app using valid username, but invalid password
+TC-PEA-003	    Login to employee app using invalid username, but valid password
+TC-PEA-016	    Submit an expense using a category above the permitted range by 1   -> changed (narrowed invalid category to exactly one above the maximum boundary)
+TC-PEA-018	    Submit an expense with a whitespace-only description
+TC-PEA-020	    Submit an expense with a description of 1 character                 -> changed (reduced description from 5 characters to 1 to test the minimum boundary)
+TC-PEA-021	    Submit an expense with a future date
+TC-PEA-030	    View expense review history for an employee with no expenses
+TC-PEA-031      Submit expense with description exceeding 200 characters            -> rejected (redundant because an existing test already covers a 201-character description)
+
+Manager App (Java)
+
+Test Case ID	  Title
+TC-JMA-002	    Login to Manager app using valid username and invalid password
+TC-JMA-003	    Login to Manager app using invalid username and valid password
+TC-JMA-012	    Attempt to review an expense using an empty ID
