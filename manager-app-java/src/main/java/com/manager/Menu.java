@@ -11,6 +11,7 @@ import com.opencsv.CSVWriter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 public class Menu {
     public static void menu(Statement stmt, Scanner scanner, String manager_name, String manager_id){
@@ -139,6 +140,8 @@ public class Menu {
                         String end = scanner.nextLine().trim();
                         if(!start.matches("^\\d{4}-\\d{2}-\\d{2}$") || 
                         !end.matches("^\\d{4}-\\d{2}-\\d{2}$") ||
+                        !isValidDate(start) ||
+                        !isValidDate(end) ||
                         LocalDate.parse(end).isBefore(LocalDate.parse(start))){
                             System.out.println("Invalid date range, returning to Menu");
                             continue;
@@ -191,6 +194,19 @@ public class Menu {
                 System.err.println("Error executing SQL script: " + e.getMessage());
                 e.printStackTrace();
             }         
+        }
+    }
+
+    //ai function to check if date is valid
+    public static boolean isValidDate(String dateStr) {
+        if (dateStr == null) {
+            return false;
+        }
+        try {
+            LocalDate.parse(dateStr);
+            return true;
+        } catch (DateTimeParseException e) {
+            return false;
         }
     }
 
