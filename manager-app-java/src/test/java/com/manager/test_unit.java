@@ -19,6 +19,8 @@ import java.util.Scanner;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -31,15 +33,20 @@ public class test_unit {
     protected Path testDbPath;
 
     // Helper methods
+
+    // Test the main application with simulated user input
     private String runMainWithDatabase(String simulatedInput) throws Exception {
+        // Save streams
         InputStream originalIn = System.in;
         PrintStream originalOut = System.out;
         PrintStream originalErr = System.err;
 
+        // Capture console output
         ByteArrayOutputStream outContent = new ByteArrayOutputStream();
         ByteArrayOutputStream errContent = new ByteArrayOutputStream();
 
         try {
+            // Provide simulated user input
             System.setIn(new ByteArrayInputStream(simulatedInput.getBytes()));
             System.setOut(new PrintStream(outContent));
             System.setErr(new PrintStream(errContent));
@@ -47,14 +54,17 @@ public class test_unit {
             Main.smallMain();
 
         } finally {
+            // Restore streams
             System.setIn(originalIn);
             System.setOut(originalOut);
             System.setErr(originalErr);
         }
 
+        // Return captured console output as string
         return outContent.toString();
     }
 
+    // Test the menu system together with SQL database connections
     private String runMenuWithDatabase(String simulatedInput) throws Exception {
         ByteArrayOutputStream outContent = new ByteArrayOutputStream();
         PrintStream originalOut = System.out;
@@ -75,6 +85,7 @@ public class test_unit {
         return outContent.toString();
     }
 
+    // Get the approval status
     private String getApprovalStatus(int expenseId) throws Exception {
         try (Connection connection = testsql.connect();
              Statement stmt = connection.createStatement();
@@ -89,6 +100,7 @@ public class test_unit {
         return null;
     }
 
+    // Get the approval comment
     private String getApprovalComment(int expenseId) throws Exception {
         try (Connection connection = testsql.connect();
              Statement stmt = connection.createStatement();
@@ -103,6 +115,7 @@ public class test_unit {
         return null;
     }
 
+    // Get the reviewer id
     private String getReviewerId(int expenseId) throws Exception {
         try (Connection connection = testsql.connect();
              Statement stmt = connection.createStatement();
@@ -117,6 +130,7 @@ public class test_unit {
         return null;
     }
 
+    // Get the review date
     private String getReviewDate(int expenseId) throws Exception {
         try (Connection connection = testsql.connect();
              Statement stmt = connection.createStatement();
@@ -145,6 +159,8 @@ public class test_unit {
     }
 
 
+    @Tag("negative")
+    @DisplayName("Covers: FR-A1")
     @Test
     public void testnewInvalidUsernameAndPassword() throws Exception {
 
@@ -166,6 +182,9 @@ public class test_unit {
     }
 
 
+    // Mock test for invalid credentials
+    @Tag("negative")
+    @DisplayName("Covers: FR-A1")
     @Test
     public void testInvalidUsernameAndPassword() throws Exception {
         // Mock the static database connection call: testsql.connect()
@@ -200,7 +219,9 @@ public class test_unit {
         }
     }
 
-    // TC-JMA-001
+    // Mock test for valid credentials
+    @Tag("smoke")
+    @DisplayName ("Covers: FR-A1")
     @Test
     public void testValidUsernameAndPassword() throws Exception {
         // Mock the static database connection call: testsql.connect()
@@ -240,6 +261,8 @@ public class test_unit {
         }
     }
 
+    @Tag("smoke")
+    @DisplayName("Covers: VR-09")
     @Test
     public void testMenuExit() throws Exception {
         Statement statementMock = mock(Statement.class);
@@ -261,6 +284,8 @@ public class test_unit {
             "Expected 'Goodbye, Jane Manager' message to be printed.");
     }
 
+    @Tag("negative")
+    @DisplayName("Covers: VR-09")
     @Test
     public void testInvalidMenuSelection() throws Exception {
 
@@ -270,6 +295,8 @@ public class test_unit {
             "Expected an invalid menu selection message.");
     }
 
+    @Tag("smoke")
+    @DisplayName("Covers: FR-M1")
     @Test
     public void testValidListPending() throws Exception {
         Statement stmt = mock(Statement.class);
@@ -309,7 +336,8 @@ public class test_unit {
     }
 
 
-    // TC-JMA-002
+    @Tag("negative")
+    @DisplayName("Covers: FR-A1")
     @Test
     public void testValidUsernameInvalidPassword() throws Exception {
 
@@ -321,7 +349,8 @@ public class test_unit {
             "Expected invalid password to be rejected.");
     }
 
-    // TC-JMA-003
+    @Tag("negative")
+    @DisplayName("Covers: FR-A1")
     @Test
     public void testInvalidUsernameValidPassword() throws Exception {
 
@@ -334,13 +363,14 @@ public class test_unit {
     }
 
 
-    // TC-JMA-008 - TC-JMA-012
+    @Tag("negative")
+    @DisplayName("Covers: FR-M2, VR-08")
     @ParameterizedTest
     @CsvSource({
         "-1",
         "1.5",
         "abc",
-        "a2"
+        "2a"
     })
     public void testInvalidExpenseId(String id) throws Exception {
 
@@ -351,6 +381,8 @@ public class test_unit {
     }
 
 
+    @Tag("negative")
+    @DisplayName("Covers: FR-M2, VR-08")
     @Test
     public void testExpenseIdZero() throws Exception {
 
@@ -362,6 +394,8 @@ public class test_unit {
             "Expected expense ID 0 to be rejected.");
     }
 
+    @Tag("negative")
+    @DisplayName("Covers: FR-M2, VR-08")
     @Test
     public void testEmptyExpenseId() throws Exception {
 
@@ -374,7 +408,8 @@ public class test_unit {
     }
 
 
-    // TC-JMA-013
+    @Tag("negative")
+    @DisplayName("Covers: FR-M2")
     @Test
     public void testNonexistentExpenseId() throws Exception {
 
@@ -384,7 +419,8 @@ public class test_unit {
             "Expected nonexistent expense ID to be rejected.");
     }
 
-    // TC-JMA-014
+    @Tag("smoke")
+    @DisplayName("Covers: FR-M2, VR-06")
     @Test
     public void testApproveExpenseWith10CharacterComment() throws Exception {
 
@@ -400,7 +436,8 @@ public class test_unit {
         assertTrue(getReviewDate(1) != null);
     }
 
-    // TC-JMA-016 (Defect)
+    @Tag("boundary")
+    @DisplayName("Covers: FR-M2, VR-06")
     @Test
     public void testApproveExpenseWith200CharacterComment() throws Exception {
 
@@ -415,7 +452,8 @@ public class test_unit {
         assertEquals(comment, getApprovalComment(1));
     }
 
-    // TC-JMA-017 (Defect)
+    @Tag("boundary")
+    @DisplayName("Covers: FR-M2, VR-06")
     @Test
     public void testApproveExpenseWith201CharacterComment() throws Exception {
 
@@ -430,7 +468,8 @@ public class test_unit {
             "A 201-character comment should not be accepted.");
     }
 
-    // TC-JMA-018
+    @Tag("negative")
+    @DisplayName("Covers: FR-M2")
     @Test
     public void testAlreadyApprovedExpense() throws Exception {
 
@@ -442,7 +481,8 @@ public class test_unit {
         assertEquals("approved", getApprovalStatus(8));
     }
 
-    // TC-JMA-019
+    @Tag("negative")
+    @DisplayName("Covers: FR-M2")
     @Test
     public void testAlreadyDeniedExpense() throws Exception {
 
@@ -454,7 +494,8 @@ public class test_unit {
         assertEquals("denied", getApprovalStatus(18));
     }
 
-    // TC-JMA-020
+    @Tag("smoke")
+    @DisplayName("Covers: FR-M2, VR-05")
     @Test
     public void testDenyExpenseWithEmptyCommentThenValidComment() throws Exception {
 
@@ -470,7 +511,8 @@ public class test_unit {
         assertEquals(comment, getApprovalComment(1));
     }
 
-    // TC-JMA-021 (Defect)
+    @Tag("boundary")
+    @DisplayName("Covers: FR-M2, VR-05")
     @Test
     public void testDenyExpenseWith4CharacterComment() throws Exception {
 
@@ -485,7 +527,8 @@ public class test_unit {
             "A 4-character denial comment should be rejected.");
     }
 
-    // TC-JMA-022 (Defect)
+    @Tag("boundary")
+    @DisplayName("Covers: FR-M2, VR-05")
     @Test
     public void testDenyExpenseWith201CharacterComment() throws Exception {
 
@@ -500,7 +543,8 @@ public class test_unit {
             "A 201-character denial comment should be rejected.");
     }
 
-    // TC-JMA-023
+    @Tag("boundary")
+    @DisplayName("Covers: FR-M2, VR-05")
     @Test
     public void testDenyExpenseWith5CharacterComment() throws Exception {
 
@@ -516,7 +560,8 @@ public class test_unit {
         assertTrue(getReviewDate(1) != null);
     }
 
-    // TC-JMA-024
+    @Tag("boundary")
+    @DisplayName("Covers: FR-M2, VR-05")
     @Test
     public void testDenyExpenseWith200CharacterComment() throws Exception {
 
@@ -532,7 +577,8 @@ public class test_unit {
     }
 
     
-    // TC-JMA-025
+    @Tag("smoke")
+    @DisplayName("Covers: FR-M2, VR-05")
     @Test
     public void testDenyExpenseWith15CharacterComment() throws Exception {
 
@@ -547,7 +593,8 @@ public class test_unit {
     }
 
 
-    // Test an invalid review decision
+    @Tag("negative")
+    @DisplayName("Covers: FR-M2")
     @Test
     public void testInvalidReviewDecision() throws Exception {
 
