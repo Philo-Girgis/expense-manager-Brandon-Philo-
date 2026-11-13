@@ -159,9 +159,9 @@ public class test_unit {
     }
 
 
+    @Test
     @Tag("negative")
     @DisplayName("Covers: FR-A1")
-    @Test
     public void testnewInvalidUsernameAndPassword() throws Exception {
 
         // Simulate input
@@ -183,9 +183,9 @@ public class test_unit {
 
 
     // Mock test for invalid credentials
+    @Test
     @Tag("negative")
     @DisplayName("Covers: FR-A1")
-    @Test
     public void testInvalidUsernameAndPassword() throws Exception {
         // Mock the static database connection call: testsql.connect()
         try (MockedStatic<testsql> mockedTestSql = Mockito.mockStatic(testsql.class)) {
@@ -220,9 +220,9 @@ public class test_unit {
     }
 
     // Mock test for valid credentials
+    @Test
     @Tag("smoke")
     @DisplayName ("Covers: FR-A1")
-    @Test
     public void testValidUsernameAndPassword() throws Exception {
         // Mock the static database connection call: testsql.connect()
         try (MockedStatic<testsql> mockedTestSql = Mockito.mockStatic(testsql.class)) {
@@ -261,9 +261,9 @@ public class test_unit {
         }
     }
 
+    @Test
     @Tag("smoke")
     @DisplayName("Covers: VR-09")
-    @Test
     public void testMenuExit() throws Exception {
         Statement statementMock = mock(Statement.class);
         
@@ -284,9 +284,9 @@ public class test_unit {
             "Expected 'Goodbye, Jane Manager' message to be printed.");
     }
 
+    @Test
     @Tag("negative")
     @DisplayName("Covers: VR-09")
-    @Test
     public void testInvalidMenuSelection() throws Exception {
 
         String output = runMenuWithDatabase("9\n0\n");
@@ -295,9 +295,9 @@ public class test_unit {
             "Expected an invalid menu selection message.");
     }
 
+    @Test
     @Tag("smoke")
     @DisplayName("Covers: FR-M1")
-    @Test
     public void testValidListPending() throws Exception {
         Statement stmt = mock(Statement.class);
         ResultSet resultSet = mock(ResultSet.class);
@@ -336,9 +336,9 @@ public class test_unit {
     }
 
 
+    @Test
     @Tag("negative")
     @DisplayName("Covers: FR-A1")
-    @Test
     public void testValidUsernameInvalidPassword() throws Exception {
 
         String output = runMainWithDatabase(
@@ -349,9 +349,9 @@ public class test_unit {
             "Expected invalid password to be rejected.");
     }
 
+    @Test
     @Tag("negative")
     @DisplayName("Covers: FR-A1")
-    @Test
     public void testInvalidUsernameValidPassword() throws Exception {
 
         String output = runMainWithDatabase(
@@ -363,9 +363,9 @@ public class test_unit {
     }
 
 
+    @ParameterizedTest
     @Tag("negative")
     @DisplayName("Covers: FR-M2, VR-08")
-    @ParameterizedTest
     @CsvSource({
         "-1",
         "1.5",
@@ -381,9 +381,9 @@ public class test_unit {
     }
 
 
+    @Test
     @Tag("negative")
     @DisplayName("Covers: FR-M2, VR-08")
-    @Test
     public void testExpenseIdZero() throws Exception {
 
         String output = runMenuWithDatabase(
@@ -394,9 +394,9 @@ public class test_unit {
             "Expected expense ID 0 to be rejected.");
     }
 
+    @Test
     @Tag("negative")
     @DisplayName("Covers: FR-M2, VR-08")
-    @Test
     public void testEmptyExpenseId() throws Exception {
 
         String output = runMenuWithDatabase(
@@ -408,9 +408,9 @@ public class test_unit {
     }
 
 
+    @Test
     @Tag("negative")
     @DisplayName("Covers: FR-M2")
-    @Test
     public void testNonexistentExpenseId() throws Exception {
 
         String output = runMenuWithDatabase("2\n999999\n0\n");
@@ -419,9 +419,9 @@ public class test_unit {
             "Expected nonexistent expense ID to be rejected.");
     }
 
+    @Test
     @Tag("smoke")
     @DisplayName("Covers: FR-M2, VR-06")
-    @Test
     public void testApproveExpenseWith10CharacterComment() throws Exception {
 
         String comment = "Looks good"; // Exactly 10 characters
@@ -436,9 +436,9 @@ public class test_unit {
         assertTrue(getReviewDate(1) != null);
     }
 
+    @Test
     @Tag("boundary")
     @DisplayName("Covers: FR-M2, VR-06")
-    @Test
     public void testApproveExpenseWith200CharacterComment() throws Exception {
 
         String comment = "A".repeat(200);
@@ -452,9 +452,9 @@ public class test_unit {
         assertEquals(comment, getApprovalComment(1));
     }
 
+    @Test
     @Tag("boundary")
     @DisplayName("Covers: FR-M2, VR-06")
-    @Test
     public void testApproveExpenseWith201CharacterComment() throws Exception {
 
         String comment = "A".repeat(201);
@@ -468,9 +468,9 @@ public class test_unit {
             "A 201-character comment should not be accepted.");
     }
 
+    @Test
     @Tag("negative")
     @DisplayName("Covers: FR-M2")
-    @Test
     public void testAlreadyApprovedExpense() throws Exception {
 
         String output = runMenuWithDatabase("2\n8\n0\n");
@@ -481,9 +481,9 @@ public class test_unit {
         assertEquals("approved", getApprovalStatus(8));
     }
 
+    @Test
     @Tag("negative")
     @DisplayName("Covers: FR-M2")
-    @Test
     public void testAlreadyDeniedExpense() throws Exception {
 
         String output = runMenuWithDatabase("2\n18\n0\n");
@@ -494,9 +494,9 @@ public class test_unit {
         assertEquals("denied", getApprovalStatus(18));
     }
 
+    @Test
     @Tag("smoke")
     @DisplayName("Covers: FR-M2, VR-05")
-    @Test
     public void testDenyExpenseWithEmptyCommentThenValidComment() throws Exception {
 
         String comment = "Valid";
@@ -511,9 +511,9 @@ public class test_unit {
         assertEquals(comment, getApprovalComment(1));
     }
 
+    @Test
     @Tag("boundary")
     @DisplayName("Covers: FR-M2, VR-05")
-    @Test
     public void testDenyExpenseWith4CharacterComment() throws Exception {
 
         String comment = "Nope"; // Exactly 4 characters
@@ -527,9 +527,9 @@ public class test_unit {
             "A 4-character denial comment should be rejected.");
     }
 
+    @Test
     @Tag("boundary")
     @DisplayName("Covers: FR-M2, VR-05")
-    @Test
     public void testDenyExpenseWith201CharacterComment() throws Exception {
 
         String comment = "A".repeat(201);
@@ -543,9 +543,9 @@ public class test_unit {
             "A 201-character denial comment should be rejected.");
     }
 
+    @Test
     @Tag("boundary")
     @DisplayName("Covers: FR-M2, VR-05")
-    @Test
     public void testDenyExpenseWith5CharacterComment() throws Exception {
 
         String comment = "Valid"; // Exactly 5 characters
@@ -560,9 +560,9 @@ public class test_unit {
         assertTrue(getReviewDate(1) != null);
     }
 
+    @Test
     @Tag("boundary")
     @DisplayName("Covers: FR-M2, VR-05")
-    @Test
     public void testDenyExpenseWith200CharacterComment() throws Exception {
 
         String comment = "A".repeat(200);
@@ -577,9 +577,9 @@ public class test_unit {
     }
 
     
+    @Test
     @Tag("smoke")
     @DisplayName("Covers: FR-M2, VR-05")
-    @Test
     public void testDenyExpenseWith15CharacterComment() throws Exception {
 
         String comment = "AAAAAAAAAAAAAAA"; // Exactly 15 characters
@@ -593,9 +593,9 @@ public class test_unit {
     }
 
 
+    @Test
     @Tag("negative")
     @DisplayName("Covers: FR-M2")
-    @Test
     public void testInvalidReviewDecision() throws Exception {
 
         String output = runMenuWithDatabase("2\n4\nx\n0\n");
